@@ -1,27 +1,27 @@
 (function ($) {
   "use strict";
-  $.fn.ritcustcarousel = function (options) {
-    var settings = $.extend(
-      {
-        url: null,
-        slides: 3,
-        direction: "left",
-        speed: "2500",
-        arrowbg: "#343a40",
-        thumb: "http://placehold.it/600x400&text=thumb",
-        slideinit: $.noop,
-      },
-      options
-    );
 
-    const $this = $(this);
-    const slurl = settings.url;
-    const slslides = settings.slides;
-    const sldirection = settings.direction;
-    const slspeed = settings.speed;
-    const slarrowbg = settings.arrowbg;
-    const slthumb = settings.thumb;
-    const currslid = genANCode(7);
+  function createImageSlider(target = "", csvfile = null, options = {}) {
+    const slslides = options.slides || 3;
+    const sldirection = options.direction || "right";
+    const slspeed = options.speed || 3000;
+    const slarrowbg = options.arrowbg || "#000";
+    const slthumb = options.thumb || "";
+    const slratio = options.aspectratio || 56.25;
+    const sltelem = "rslider";
+
+    function genANCode(length) {
+      let result = "r";
+      const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      const charactersLength = characters.length;
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(
+          Math.floor(Math.random() * charactersLength)
+        );
+      }
+      return result;
+    }
 
     function parseCSV(csvData) {
       const rows = csvData.split("\n");
@@ -47,6 +47,7 @@
     }
 
     function csvToJson(csvData) {
+      csvData.pop();
       const csvArray = csvData.slice("\n");
       const jsonKeys = csvArray[0].slice(",").map((key) => key.trim());
       csvArray.shift();
@@ -60,288 +61,263 @@
       return jsonArray;
     }
 
-    function genANCode(length) {
-      let result = "";
-      const characters =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      const charactersLength = characters.length;
-
-      for (let i = 0; i < length; i++) {
-        result += characters.charAt(
-          Math.floor(Math.random() * charactersLength)
-        );
+    function dataToDom(objarr, parentcontainer) {
+      let slideratio = 100 / slslides;
+      const width =
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
+        document.body.clientWidth;
+      const height =
+        window.innerHeight ||
+        document.documentElement.clientHeight ||
+        document.body.clientHeight;
+      const parentContainerWidth = parentcontainer.offsetWidth;
+      let itemwidth = parentContainerWidth;
+      if (width > 480 && width <= 980) {
+        itemwidth = parentContainerWidth / Math.round(slslides / 3);
+      } else if (width > 980 && width <= 1366) {
+        itemwidth = parentContainerWidth / Math.round(slslides / 2);
+      } else if (width > 1366) {
+        itemwidth = parentContainerWidth / slslides;
       }
+      let itemheight = (itemwidth * slratio) / 100;
+      const currslid = genANCode(5);
 
-      return result;
-    }
-
-    function dataToDom(objarr) {
-      let htmldom = "";
-      htmldom +=
-        '<div id="' +
-        currslid +
-        '" class="carousel slide" data-ride="carousel" data-interval="' +
-        slspeed +
-        '" data-pause="hover" style="width: 100%;">';
-      htmldom += '<div class="carousel-inner" role="listbox">';
-      objarr.map((obj, i) => {
-        let activeitem = i == 0 ? "active" : "";
-        htmldom += '<div class="carousel-item ' + activeitem + '">';
-        htmldom += '<div class="carousel-box">';
-        if (obj.type === "video") {
-          htmldom +=
-            '<div id="' +
-            genANCode(5) +
-            '" class="box-wrapper" data-type="' +
-            obj.type +
-            '" data-src="' +
-            obj.src +
-            '" data-src="' +
-            obj.poster +
-            '">';
-          htmldom +=
-            '<img class="img-fluid full-width lazy-load-media" src="' +
-            slthumb +
-            '" data-src="' +
-            obj.poster +
-            '" alt="' +
-            obj.alt +
-            '" />';
-          htmldom += '<div class="box-btnwrap">';
-          htmldom +=
-            '<button class="playButton"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#ffffff" class="bi bi-play-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/></svg></button>';
-          htmldom += "</div>";
-          htmldom += "</div>";
-        } else if (obj.type === "embed") {
-          htmldom +=
-            '<div id="' +
-            genANCode(5) +
-            '" class="box-wrapper" data-type="' +
-            obj.type +
-            '" data-src="' +
-            obj.alt +
-            '" data-src="' +
-            obj.poster +
-            '">';
-          htmldom +=
-            '<img class="img-fluid full-width lazy-load-media" src="' +
-            slthumb +
-            '" data-src="' +
-            obj.poster +
-            '" alt="' +
-            obj.alt +
-            '" />';
-          htmldom += '<div class="box-btnwrap">';
-          htmldom +=
-            '<button class="playButton"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#ffffff" class="bi bi-play-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/></svg></button>';
-          htmldom += "</div>";
-          htmldom += "</div>";
-        } else {
-          htmldom += '<div class="box-wrapper">';
-          if (obj.redirect != "N/a" || obj.redirect != "") {
-            htmldom +=
-              '<a href="' +
-              obj.redirect +
-              '" title="' +
-              obj.alt +
-              '" target="_blank" style="display: block;width:100%;height: 100%;">';
-            htmldom +=
-              '<img class="img-fluid full-width lazy-load-media" src="' +
-              slthumb +
-              '" data-src="' +
-              obj.src +
-              '" alt="' +
-              obj.alt +
-              '" />';
-            htmldom += "</a>";
+      let htmldom = `<div id="${currslid}" class="${sltelem}" style="position: relative;overflow: hidden;box-sizing: border-box;z-index:0;"><div class="${sltelem}__wrapper" style="position: relative;margin: 0;padding: 0;width: 100%;height: 100%;display: flex;transform: translateX(-0}%);box-sizing: border-box;z-index:1;">${objarr
+        .map((item, i) => {
+          let ecnodedsrc = String(item.src);
+          if (item.type === "video") {
+            return `<div class="${sltelem}__item" style="position: relative;min-width: ${itemwidth}px;min-height: ${itemheight}px;box-sizing: border-box;overflow: hidden;"><div id="${sltelem}__item__${currslid}-${i}" class="box-wrapper" style="position:absolute;top:0;left:0;right:0;bottom:0;margin: 0;height: 100%;width: 100%;"><button type="button" data-type="${
+              item.type
+            }" data-src="${encodeURIComponent(ecnodedsrc)}" data-thumb="${
+              item.poster
+            }" data-ratio="${slratio}" title="${
+              item.title
+            }" style="display: flex;align-items: center;justify-content: center;width:100%;height: 100%;background:transparent;border:none;cursor:pointer;margin:0;padding:0;"><img class="img-fluid full-width lazy-load-media" src="${slthumb}" data-src="${
+              item.poster
+            }" alt="${
+              item.alt
+            }" style="height: auto;width: 100%;object-fit: cover;"><div class="box-btnwrap" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#ffffff" class="bi bi-play-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"></path></svg></div></button></div></div>`;
+          } else if (item.type === "embed") {
+            return `<div class="${sltelem}__item" style="position: relative;min-width: ${itemwidth}px;min-height: ${itemheight}px;box-sizing: border-box;overflow: hidden;"><div id="${sltelem}__item__${currslid}-${i}" class="box-wrapper" style="position:absolute;top:0;left:0;right:0;bottom:0;margin: 0;height: 100%;width: 100%;"><button type="button" data-type="${
+              item.type
+            }" data-src="${encodeURIComponent(ecnodedsrc)}" data-thumb="${
+              item.poster
+            }" data-ratio="${slratio}" title="${
+              item.title
+            }" style="display: flex;align-items: center;justify-content: center;width:100%;height:100%;background:transparent;border:none;cursor:pointer;margin:0;padding:0;"><img class="img-fluid full-width lazy-load-media" src="${slthumb}" data-src="${
+              item.poster
+            }" alt="${
+              item.alt
+            }" style="height: auto;width: 100%;object-fit: cover;"><div class="box-btnwrap" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#ffffff" class="bi bi-play-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"></path></svg></div></button></div></div>`;
           } else {
-            htmldom +=
-              '<img class="img-fluid full-width lazy-load-media" src="' +
-              slthumb +
-              '" data-src="' +
-              obj.src +
-              '" alt="' +
-              obj.alt +
-              '" />';
+            return `<div class="${sltelem}__item" style="position: relative;min-width: ${itemwidth}px;min-height: ${itemheight}px;box-sizing: border-box;overflow: hidden;"><div id="${sltelem}__item__${currslid}-${i}" class="box-wrapper" style="position:absolute;top:0;left:0;right:0;bottom:0;margin: 0;height: 100%;width: 100%;"><a href="${item.url}" title="${item.title}" target="_blank" style="display: flex;align-items: center;justify-content: center;width:100%;height: 100%;"><img class="img-fluid full-width lazy-load-media" src="${slthumb}" data-src="${ecnodedsrc}" alt="${item.alt}" style="height: auto;width: 100%;object-fit: cover;"></a></div></div>`;
           }
-          htmldom += "</div>";
-        }
-
-        htmldom += "</div>";
-        htmldom += "</div>";
-      });
-      htmldom += "</div>";
-      htmldom +=
-        '<a class="carousel-control-prev" href="#' +
-        currslid +
-        '" role="button" data-slide="prev" style="background:' +
-        slarrowbg +
-        ';max-width: 25px;">';
-      htmldom +=
-        '<span class="carousel-control-prev-icon" aria-hidden="true"></span>';
-      htmldom += '<span class="sr-only">Previous</span>';
-      htmldom += "</a>";
-      htmldom +=
-        '<a class="carousel-control-next" href="#' +
-        currslid +
-        '" role="button" data-slide="next" style="background:' +
-        slarrowbg +
-        ';max-width: 25px;">';
-      htmldom +=
-        '<span class="carousel-control-next-icon" aria-hidden="true"></span>';
-      htmldom += '<span class="sr-only">Next</span>';
-      htmldom += "</a>";
-      htmldom += "</div>";
-
+        })
+        .join(
+          ""
+        )}</div><div style="position: absolute;top: 50%;left: 0;transform: translateY(-50%);box-sizing: border-box;z-index:2;"><a href="javascript:void(0)" class="${sltelem}__control_left" role="button" style="background: ${slarrowbg};display: inline-block;padding: 5px;line-height: 0;color:inherit;border-radius:50px;opacity:0.85;margin:5px;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg></a></div><div style="position: absolute;right: 0;top: 50%;transform: translateY(-50%);box-sizing: border-box;z-index:2;"><a href="javascript:void(0)" class="${sltelem}__control_right" role="button" style="background: ${slarrowbg};display: inline-block;padding: 5px;line-height: 0;color:inherit;border-radius:50px;opacity:0.85;margin:5px;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg></a></div></div>`;
       return htmldom;
     }
 
-    function getstyle(ratio) {
-      let slideratio = 100 / slslides;
-      let slwidth = $("#" + currslid)
-        .find(".carousel-box")
-        .width();
-      const sldstyle = document.createElement("style");
-      sldstyle.textContent = `#${currslid} .carousel-item.active,#${currslid} .carousel-item-next,#${currslid} .carousel-item-prev {display: flex;flex-direction:row;transition: transform 0.6s ease-in-out;}
-    #${currslid} .carousel-item-right.active,#${currslid} .carousel-item-next {transform: translateX(${slwidth}px);}
-    #${currslid} .carousel-item-left.active,#${currslid} .carousel-item-prev {transform: translateX(${slwidth}px);}
-    #${currslid} .carousel-item .carousel-box {-webkit-box-flex: 0;-ms-flex: 0 0 ${slideratio}%;flex: 0 0 ${slideratio}%;max-width: ${slideratio}%;}
-    #${currslid} .carousel-item .box-wrapper {position: relative;overflow: hidden;display:flex;align-items: stretch;justify-content: stretch;height: 100%;margin: auto;background: #111;}
-    #${currslid} .carousel-item .box-btnwrap {position: absolute;top: calc(50% - 24px);left: calc(50% - 24px);z-index:2;}
-    #${currslid} .carousel-item button.playButton,#${currslid} .carousel-item button.playButton:focus {padding:0;border-radius: 50%;border:none;background:transparent;outline:none;box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;}
-    #${currslid} .carousel-item .box-wrapper img.full-width{height: 100%;width: auto;object-fit: cover;}
-    `;
-      document.head.appendChild(sldstyle);
-    }
+    function sliderinit(targetElem, move = "right") {
+      var mainSlider = targetElem.querySelector(`.${sltelem}`);
+      var listSlider = mainSlider.querySelector(`.${sltelem}__wrapper`);
+      var itemSlider = listSlider.querySelectorAll(`.${sltelem}__item`);
+      var prevBtn = mainSlider.querySelector(`.${sltelem}__control_left`);
+      var nextBtn = mainSlider.querySelector(`.${sltelem}__control_right`);
+      var sliderInterval;
 
-    function slLoadImages() {
-      $this.find("img[data-src]").each(function () {
-        var $img = $(this);
-        var src = $img.data("src");
-        $("<img>")
-          .on("load", function () {
-            $img.attr("src", src);
-          })
-          .attr("src", src);
+      function resetPos() {
+        itemSlider.forEach(function (element) {
+          element.classList.remove("transition");
+          element.classList.remove("left");
+          element.classList.remove("right");
+        });
+      }
+
+      prevBtn.addEventListener("click", function () {
+        prev();
+        resetPos();
       });
-    }
 
-    var intervalID;
+      nextBtn.addEventListener("click", function () {
+        next();
+        resetPos();
+      });
 
-    function startSlInterval() {
-      $this.on("slide.bs.carousel", function () {
-        // stopSlInterval();
-        // startSlInterval();
-        intervalID = setInterval(function () {
-          if (sldirection != "right") $("#" + currslid).carousel("prev");
-          else $("#" + currslid).carousel("next");
+      mainSlider.addEventListener("mouseenter", function () {
+        clearInterval(sliderInterval);
+      });
+
+      mainSlider.addEventListener("mouseleave", function () {
+        sliderInterval = setInterval(function () {
+          next();
+          resetPos();
         }, slspeed);
       });
-    }
 
-    function stopSlInterval() {
-      clearInterval(intervalID);
-    }
-
-    function stopAllVid() {
-      $("video").each(function () {
-        this.pause();
-      });
-      $("iframe").each(function () {
-        var src = $(this).attr("src");
-        $(this).attr("src", src);
-      });
-    }
-
-    $this.on("click", ".playButton", function (event) {
-      $this.carousel("pause");
-      stopSlInterval();
-      if ($(event.currentTarget).hasClass("playButton")) {
-        var elemparent = $(this).closest(".box-wrapper");
-        let elemsrc = elemparent.attr("data-src");
-        let elemtype = elemparent.attr("data-type");
-        let elemthumb = elemparent.attr("data-thumb");
-        stopAllVid();
-
-        if (elemtype === "video") {
-          let dydom = "";
-          dydom +=
-            '<div class="embed-responsive embed-responsive-4by3 my-0" style="background: #111 !important;">';
-          dydom +=
-            '<video autoplay="autoplay" muted="" loop="" poster="' +
-            elemthumb +
-            '">';
-          dydom += '<source src="' + elemsrc + '" type="video/mp4">';
-          dydom +=
-            '<img alt="banner-video-image" src="' +
-            elemthumb +
-            '" title="banner-video">';
-          dydom +=
-            '<p>Your browser does not support HTML5 video. Here is a <a href="' +
-            elemsrc +
-            '" type="video/mp4" tabindex="0">link to the video</a> instead.</p>';
-          dydom += "</video>";
-          dydom += "</div>";
-          elemparent.html(dydom);
-        } else if (elemtype === "embed") {
-          let dydom = "";
-          dydom +=
-            '<div class="embed-responsive embed-responsive-4by3" style="align-self:center;">';
-          dydom +=
-            '<iframe width="560" height="315" src="https://www.youtube.com/embed/' +
-            elemsrc +
-            '?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
-          dydom += "</div>";
-          elemparent.html(dydom);
-        } else {
-          return false;
-        }
-      } else {
-        startSlInterval();
-      }
-    });
-
-    fetchCSVData(slurl)
-      .then((response) => {
-        const data = csvToJson(response);
-        data.pop();
-        return data;
-      })
-      .then((dataarr) => {
-        const dombuild = dataToDom(dataarr);
-        return dombuild;
-      })
-      .then((modifiedData) => {
-        getstyle(currslid);
-        $this.append(modifiedData);
-        $(".carousel .carousel-item").each(function () {
-          var minPerSlide = slslides;
-          var next = $(this).next();
-          if (!next.length) {
-            next = $(this).siblings(":first");
-          }
-          next.children(":first-child").clone().appendTo($(this));
-
-          for (var i = 0; i < minPerSlide; i++) {
-            next = next.next();
-            if (!next.length) {
-              next = $(this).siblings(":first");
+      function prev() {
+        var sliderLength = itemSlider.length;
+        itemSlider.forEach(function (element) {
+          var curPos = parseInt(element.style.order);
+          if (move === "right") {
+            if (curPos > 1) {
+              element.style.order = curPos - 1;
+            } else {
+              curPos = sliderLength;
+              element.style.order = curPos;
             }
-
-            next.children(":first-child").clone().appendTo($(this));
+          } else {
+            if (curPos < sliderLength) {
+              element.style.order = curPos + 1;
+            } else {
+              curPos = 1;
+              element.style.order = curPos;
+            }
           }
         });
-        startSlInterval();
+      }
 
-        setTimeout(function () {
-          slLoadImages();
-        }, 2500);
-        $this.carousel("cycle");
-      })
-      .catch((error) => {
-        console.error(error);
+      function next() {
+        var sliderLength = itemSlider.length;
+        itemSlider.forEach(function (element) {
+          var curPos = parseInt(element.style.order);
+          if (move === "right") {
+            var curPos = parseInt(element.style.order);
+            if (curPos < sliderLength) {
+              element.style.order = curPos + 1;
+            } else {
+              curPos = 1;
+              element.style.order = curPos;
+            }
+          } else {
+            if (curPos > 0) {
+              element.style.order = curPos - 1;
+            } else {
+              curPos = sliderLength - 1;
+              element.style.order = curPos;
+            }
+          }
+        });
+      }
+
+      function stopAllVid() {
+        var videos = document.getElementsByTagName("video");
+        for (var i = 0; i < videos.length; i++) {
+          videos[i].pause();
+        }
+
+        var iframes = document.getElementsByTagName("iframe");
+        for (var j = 0; j < iframes.length; j++) {
+          var src = iframes[j].src;
+          iframes[j].src = src;
+        }
+      }
+
+      mainSlider.addEventListener("click", function (e) {
+        let closestButton = e.target.closest("button");
+        if (closestButton) {
+          stopAllVid();
+          let id = closestButton.id;
+          let src = closestButton.dataset.src;
+          let type = closestButton.dataset.type;
+          let thumb = closestButton.dataset.thumb;
+          let ratio = closestButton.dataset.ratio;
+          let repdom;
+          if (type === "video") {
+            repdom = `<div id="${id}" data-type="video" data-src="${src}"><div style="position: relative;display: block;height: 0;padding: 0;overflow: hidden;margin:0 auto;padding-bottom: ${ratio}%;"><video autoplay="autoplay" muted="" loop="" poster="undefined" controls style="position: absolute;top: 0;bottom: 0;left: 0;width: 100%;height: 100%;border: 0;"><source src="${decodeURIComponent(
+              src
+            )}" type="video/mp4"><img alt="banner-video-image" src="${thumb}" title="video" style="margin: 0 auto;display: block;max-width: 100%;height: auto;"><p>Your browser does not support HTML5 video. Here is a <a href="${decodeURIComponent(
+              src
+            )}" type="video/mp4" tabindex="0">link to the video</a> instead.</p></video></div></div>`;
+          } else if (type === "embed") {
+            repdom = `<div id="${id}" data-type="video" data-src="${src}"><div class="responsive-embed" style="position: relative;display: block;height: 0;padding: 0;overflow: hidden;margin:0 auto;padding-bottom: ${ratio}%;" style="align-self:center;">${decodeURIComponent(
+              src
+            )}</div></div>`;
+          } else {
+            repdom = `<div id="${id}"><p style="margin-bottom:0">Nothing found</p></div>`;
+          }
+
+          closestButton.parentElement.outerHTML = repdom;
+        }
       });
 
-    //   end of plugin
-  };
+      function initInfinity() {
+        sliderInterval = setInterval(function () {
+          next();
+          resetPos();
+        }, slspeed);
+        if (move === "right") {
+          prev();
+          itemSlider.forEach(function (element, index) {
+            element.style.order = index - 1;
+          });
+        }
+        if (move === "left") {
+          itemSlider.forEach(function (element, index) {
+            element.style.order = index + 1;
+          });
+        }
+      }
+      initInfinity();
+    }
+
+    function slLoadImages(target) {
+      const lazyImages = target.querySelectorAll("img[data-src]");
+      lazyImages.forEach(function (img) {
+        let src = img.dataset.src;
+        let newImg = new Image();
+        newImg.onload = function () {
+          img.setAttribute("src", src);
+        };
+        newImg.src = src;
+      });
+    }
+
+    function getstyle() {
+      const existingStyleElement = document.head.querySelector(
+        "style#style-rslider"
+      );
+
+      if (!existingStyleElement) {
+        var sldstyle = document.createElement("style");
+        sldstyle.id = "style-" + sltelem;
+        sldstyle.textContent = `.rslider .responsive-embed iframe {object-fit: fill;position: absolute;top: 0;left: 0;width: 100%;height: 100%;}`;
+        document.head.appendChild(sldstyle);
+      }
+    }
+
+    function sliderinitilize() {
+      var targetElement = document.querySelector(target);
+      const currslid = genANCode(7);
+      fetchCSVData(csvfile)
+        .then((response) => {
+          getstyle();
+          const data = csvToJson(response);
+          data.pop();
+          return data;
+        })
+        .then((dataarr) => {
+          const dombuild = dataToDom(dataarr, targetElement);
+          targetElement.insertAdjacentHTML("beforeend", dombuild);
+          targetElement.innerHTML = dombuild;
+          return targetElement;
+        })
+        .then((target) => {
+          sliderinit(target, sldirection);
+          window.onload = slLoadImages(target);
+        })
+        .then(() => {
+          window.removeEventListener("scroll", sliderinitilize);
+          window.removeEventListener("resize", sliderinitilize);
+          window.removeEventListener("orientationchange", sliderinitilize);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+
+    sliderinitilize();
+  }
 })(jQuery);
