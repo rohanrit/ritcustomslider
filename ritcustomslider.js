@@ -1,4 +1,4 @@
-(function ($) {
+
   "use strict";
 
   function createImageSlider(target = "", csvfile = null, options = {}) {
@@ -320,4 +320,3 @@
 
     sliderinitilize();
   }
-})(jQuery);
