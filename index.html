@@ -7,109 +7,106 @@
   </head>
   <body>
     <h2>Custom slider library</h2>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/rohanrit/ritcustomslider/ritcustomslider.js"></script>
+    <h3>Imaage Slider</h3>
+    <div id="sliderContainer1"></div>
+    <h3>Youtube Slider</h3>
+    <div id="sliderContainer6"></div>
+    <h3>Imaage Slider</h3>
+    <div id="sliderContainer7"></div>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/gh/rohanrit/ritcustomslider/ritcustomslider.min.js"
+    ></script>
     <script>
-
-    var docReady = function(fn) {
-        var stateCheck = setInterval(function() {
-            if (document.readyState !== "complete") return;
-            clearInterval(stateCheck);
-            try {
-                fn()
-            } catch (e) {}
+      var docReady = function (fn) {
+        var stateCheck = setInterval(function () {
+          if (document.readyState !== "complete") return;
+          clearInterval(stateCheck);
+          try {
+            fn();
+          } catch (e) {}
         }, 1);
-    };
-    docReady(function() {
+      };
+      docReady(function () {
         createImageSlider(
           "#sliderContainer1",
-          "https://knorish-cdn.azureedge.net/public/2b7bf9a7-3d9f-4116-b95f-ee60e99ec2b8/customfile/05102023/3df46.csv",
+          "https://cdn.jsdelivr.net/gh/rohanrit/ritcustomslider/assets/image_files.csv",
           {
             slides: 5,
             direction: "left",
             speed: "1500",
             arrowbg: "#00bc8c",
             thumb: "http://placehold.it/390x245&text=img",
-            aspectratio: 56.6,
+            aspectratio: 133.33,
           }
         );
-    });
 
-    //   document.addEventListener("DOMContentLoaded", function () {
-    //     createImageSlider(
-    //       "#sliderContainer1",
-    //       "https://knorish-cdn.azureedge.net/public/2b7bf9a7-3d9f-4116-b95f-ee60e99ec2b8/customfile/05102023/3df46.csv",
-    //       {
-    //         slides: 5,
-    //         direction: "left",
-    //         speed: "1500",
-    //         arrowbg: "#00bc8c",
-    //         thumb: "http://placehold.it/390x245&text=img",
-    //         aspectratio: 56.6,
-    //       }
-    //     );
+        createImageSlider(
+          "#sliderContainer6",
+          "https://cdn.jsdelivr.net/gh/rohanrit/ritcustomslider/assets/embed_youtube_files.csv",
+          {
+            slides: 6,
+            direction: "right",
+            speed: "2000",
+            arrowbg: "#f0f0f0",
+            thumb: "http://placehold.it/390x245&text=img",
+            aspectratio: 56.66,
+          }
+        );
 
-    //     createImageSlider("#sliderContainer2", "#", {
-    //       slides: 4,
-    //       direction: "right",
-    //       speed: "2000",
-    //       arrowbg: "#0000ff",
-    //       thumb: "http://placehold.it/390x245&text=img",
-    //       aspectratio: 75,
-    //     });
+        createImageSlider(
+          "#sliderContainer7",
+          "https://cdn.jsdelivr.net/gh/rohanrit/ritcustomslider/assets/image_files.csv",
+          {
+            slides: 8,
+            direction: "left",
+            speed: "1000",
+            arrowbg: "#00bc8c",
+            thumb: "http://placehold.it/390x245&text=img",
+            aspectratio: 0.5625,
+          }
+        );
+      });
 
-    //     createImageSlider("#sliderContainer3", "#", {
-    //       slides: 7,
-    //       direction: "left",
-    //       speed: "1500",
-    //       arrowbg: "#ff0000",
-    //       thumb: "http://placehold.it/390x245&text=img",
-    //       aspectratio: 177.778,
-    //     });
+      //   document.addEventListener("DOMContentLoaded", function () {
 
-    //     createImageSlider("#sliderContainer4", "#", {
-    //       slides: 4,
-    //       direction: "right",
-    //       speed: "2000",
-    //       arrowbg: "#00ff00",
-    //       thumb: "http://placehold.it/390x245&text=img",
-    //       aspectratio: 100,
-    //     });
+      //     createImageSlider("#sliderContainer2", "#", {
+      //       slides: 4,
+      //       direction: "right",
+      //       speed: "2000",
+      //       arrowbg: "#0000ff",
+      //       thumb: "http://placehold.it/390x245&text=img",
+      //       aspectratio: 75,
+      //     });
 
-    //     createImageSlider("#sliderContainer5", "#", {
-    //       slides: 4,
-    //       direction: "right",
-    //       speed: "1500",
-    //       arrowbg: "#0f0f0f",
-    //       thumb: "http://placehold.it/390x245&text=img",
-    //       aspectratio: 75,
-    //     });
+      //     createImageSlider("#sliderContainer3", "#", {
+      //       slides: 7,
+      //       direction: "left",
+      //       speed: "1500",
+      //       arrowbg: "#ff0000",
+      //       thumb: "http://placehold.it/390x245&text=img",
+      //       aspectratio: 177.778,
+      //     });
 
-    //     createImageSlider(
-    //       "#sliderContainer6",
-    //       "https://knorish-cdn.azureedge.net/public/2b7bf9a7-3d9f-4116-b95f-ee60e99ec2b8/customfile/05102023/3df46.csv",
-    //       {
-    //         slides: 6,
-    //         direction: "right",
-    //         speed: "2000",
-    //         arrowbg: "#f0f0f0",
-    //         thumb: "http://placehold.it/390x245&text=img",
-    //         aspectratio: 133.33,
-    //       }
-    //     );
+      //     createImageSlider("#sliderContainer4", "#", {
+      //       slides: 4,
+      //       direction: "right",
+      //       speed: "2000",
+      //       arrowbg: "#00ff00",
+      //       thumb: "http://placehold.it/390x245&text=img",
+      //       aspectratio: 100,
+      //     });
 
-    //     createImageSlider(
-    //       "#sliderContainer7",
-    //       "https://knorish-cdn.azureedge.net/public/2b7bf9a7-3d9f-4116-b95f-ee60e99ec2b8/customfile/05102023/3df46.csv",
-    //       {
-    //         slides: 8,
-    //         direction: "left",
-    //         speed: "1000",
-    //         arrowbg: "#00bc8c",
-    //         thumb: "http://placehold.it/390x245&text=img",
-    //         aspectratio: 133.33,
-    //       }
-    //     );
-    //   });
+      //     createImageSlider("#sliderContainer5", "#", {
+      //       slides: 4,
+      //       direction: "right",
+      //       speed: "1500",
+      //       arrowbg: "#0f0f0f",
+      //       thumb: "http://placehold.it/390x245&text=img",
+      //       aspectratio: 75,
+      //     });
+
+      //   });
     </script>
   </body>
 </html>

@@ -283,7 +283,7 @@ function createImageSlider(target = "", csvfile = null, options = {}) {
     if (!existingStyleElement) {
       var sldstyle = document.createElement("style");
       sldstyle.id = "style-" + sltelem;
-      sldstyle.textContent = `.rslider .responsive-embed iframe {object-fit: fill;position: absolute;top: 0;left: 0;width: 100%;height: 100%;}`;
+      sldstyle.textContent = `.rslider .rslider__item {margin:5px} .rslider .responsive-embed iframe {object-fit: fill;position: absolute;top: 0;left: 0;width: 100%;height: 100%;}`;
       document.head.appendChild(sldstyle);
     }
   }
